@@ -50,6 +50,5 @@ plt.title("Edge Detected Picture")
 
 plt.savefig('plots/basics-plot.png')
 
-
 plt.show()
 
