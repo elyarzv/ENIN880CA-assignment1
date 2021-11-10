@@ -22,7 +22,7 @@ cv2.imwrite('photos/thresh.jpeg', thresh)
 cv2.imwrite('photos/edge.jpeg', edge)
 
 # plotting the images resulted in basic  
-f = plt.figure(0)
+f = plt.figure("basics")
 
 f.add_subplot(3,2,1)
 plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
@@ -48,6 +48,7 @@ f.add_subplot(3,2,6)
 plt.imshow(edge, cmap="gray", vmin=0, vmax=255)
 plt.title("Edge Detected Picture")
 
+plt.savefig('plots/basics-plot.png')
 
 ## Convolution
 
@@ -65,7 +66,7 @@ cv2.imwrite('photos/uniform.jpeg', img_uniform)
 cv2.imwrite('photos/guassian.jpeg', img_gaussian)
 
 # show the image 
-f2 = plt.figure(1)
+f2 = plt.figure("convolution")
 
 f2.add_subplot(2,2,1)
 plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
@@ -83,6 +84,7 @@ f2.add_subplot(2,2,4)
 plt.imshow(cv2.cvtColor(img_gaussian, cv2.COLOR_BGR2RGB))
 plt.title("Blurred Picture with guassian kernel")
 
+plt.savefig('plots/convolution-plot.png')
 
 ## Template Matching
 
@@ -114,7 +116,7 @@ for pt in zip(*loc[::-1]):
 
 # Show the final image with the matched area.
 # Show the image 
-f3 = plt.figure(0)
+f3 = plt.figure("template-match")
 
 f3.add_subplot(1,2,1)
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
@@ -124,4 +126,111 @@ f3.add_subplot(1,2,2)
 plt.imshow(cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB))
 plt.title("Gaussian Blurred Picture")
 
+plt.savefig('plots/template-match-plot.png')
+
+## blobs
+
+# Read image
+img = cv2.imread("photos/blob.png", cv2.IMREAD_GRAYSCALE)
+
+# Setup SimpleBlobDetector parameters.
+params = cv2.SimpleBlobDetector_Params()
+
+# Filter by Convexity
+params.filterByConvexity = True
+params.minConvexity = 0.0
+
+# Filter by Circularity
+params.filterByCircularity = True
+params.minCircularity = 0.5
+
+# Set up the detector with default parameters.
+detector = cv2.SimpleBlobDetector_create(params)
+
+# Detect blobs.
+keypoints = detector.detect(img)
+
+# Draw detected blobs as red circles.
+# cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+img_with_keypoints = cv2.drawKeypoints(img, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+f4 = plt.figure("blob")
+plt.imshow(img_with_keypoints,  cmap="gray", vmin=0, vmax=255)
+plt.title("Edges of Picture")
+
+plt.savefig('plots/blob-plot.png')
+
+# Hough Transform
+
+# Read image
+img = cv2.imread("photos/highway.jpeg")
+
+# Convert the image to gray-scale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Find the edges in the image using canny detector
+edges = cv2.Canny(gray, 50, 200)
+
+# Detect points that form a line
+#lines = cv2.HoughLinesP(edges, 1, np.pi/180, max_slider=50, minLineLength=10, maxLineGap=250)
+
+# Draw lines on the image
+#for line in lines:
+#    x1, y1, x2, y2 = line[0]
+#    cv2.line(img, (x1, y1), (x2, y2), (255, 0, 0), 3)
+    
+minLineLength = 10
+maxLineGap = 50
+#lines = cv2.HoughLinesP(edges, 1, np.pi/150, 200,        minLineLength,maxLineGap)
+#lines = cv2.HoughLinesP(edges, 1, np.pi/180, 20, minLineLength=5, maxLineGap=100)
+lines = cv2.HoughLines(edges,1,np.pi/180,230)
+for line in lines:
+    rho,theta = line[0]
+    a = np.cos(theta)
+    b = np.sin(theta)
+    x0 = a*rho
+    y0 = b*rho
+    x1 = int(x0 + 1000*(-b))
+    y1 = int(y0 + 1000*(a))
+    x2 = int(x0 - 1000*(-b))
+    y2 = int(y0 - 1000*(a))
+    cv2.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+
+# Show result
+f6 = plt.figure("hough")
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.title("Edges of Picture")
+
+plt.savefig('plots/hough-plot.png')
+
+
+## corner detection
+
+# loading image
+image = cv2.imread('photos/desk.jpg') 
+  
+# convert the input image into grayscale
+img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
+  
+# convert the data type 
+img_gray = np.float32(img_gray) 
+  
+# implementing cv2.cornerHarris method 
+hcd_img = cv2.cornerHarris(img_gray, 5, 5, 0.08) 
+  
+# marking dilated corners 
+hcd_img = cv2.dilate(hcd_img, None) 
+  
+# reverting back to the original image
+image[hcd_img > 0.01 * hcd_img.max()]=[0, 0, 255] 
+
+#Show result
+f7 = plt.figure("corner")
+plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+plt.title("Corners detected with Harris Algorithm")
+
+plt.savefig('plots/corner-plot.png')
+
+
 plt.show()
+
