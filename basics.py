@@ -2,26 +2,26 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Load the image
+# Load the image #
 image = cv2.imread('photos/face.jpeg', 0)
 
-## Basics
+# Basics #
         
-# Inverting the image
+# Inverting the image #
 inverted = np.invert(image)
 
-# applying threshhold
+# applying threshhold #
 ret,thresh = cv2.threshold(image, 120, 255, cv2.THRESH_BINARY)
 
-# applying edge detection
+# applying edge detection #
 edge = cv2.Canny(image,80,200)
 
-# saving the imaged in photo/ directory
+# saving the imaged in photo/ directory #
 cv2.imwrite('photos/inverted.jpeg', inverted)
 cv2.imwrite('photos/thresh.jpeg', thresh)
 cv2.imwrite('photos/edge.jpeg', edge)
 
-# plotting the images resulted in basic  
+# plotting the images resulted in basic #
 f = plt.figure("basics")
 
 f.add_subplot(3,2,1)
