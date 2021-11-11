@@ -40,7 +40,5 @@ plt.imshow(cv2.cvtColor(img_gaussian, cv2.COLOR_BGR2RGB))
 plt.title("Blurred Picture with guassian kernel")
 
 plt.savefig('plots/convolution-plot.png')
-
-
 plt.show()
 
